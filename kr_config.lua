@@ -1,5 +1,5 @@
--- Browser setup is stored outside the plugin directory; config.lua remains a
--- supported fallback for existing users and advanced request parameters.
+-- Browser setup is stored outside the plugin directory; config.lua is the
+-- file-based alternative and holds advanced request parameters.
 local DataStorage = require("datastorage")
 local JSON = require("json")
 
