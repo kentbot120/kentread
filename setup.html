@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KentRead · 接口配置</title>
+<style>
+  * { box-sizing: border-box; }
+  body { max-width: 560px; margin: 32px auto; padding: 0 20px; color: #222; background: #fafafa; font: 16px/1.6 system-ui, sans-serif; }
+  h1 { font-size: 26px; }
+  label { display: block; margin: 20px 0 6px; font-weight: bold; }
+  input, button { width: 100%; padding: 12px; border: 1px solid #888; border-radius: 6px; font: inherit; }
+  input { background: white; }
+  button { margin: 28px 0 12px; background: #222; color: white; cursor: pointer; }
+  small { display: block; color: #555; }
+  .notice { padding: 12px; border: 1px solid #bbb; background: white; }
+</style>
+<h1>KentRead · 接口配置</h1>
+<p>配置直接发送到阅读器，不经过插件开发者的服务器。保存后自动关闭配网服务。</p>
+<p class="notice">仅在可信 Wi-Fi 下操作：此临时页面使用未加密的局域网 HTTP。请勿在公共网络填写密钥，勿分享配网二维码。页面 5 分钟后失效。</p>
+<form method="post" autocomplete="off">
+  <label for="base_url">OpenAI 兼容接口地址</label>
+  <input id="base_url" name="base_url" type="url" value="{{base_url}}" maxlength="2048" required spellcheck="false" autocapitalize="none">
+  <small>例如 https://api.deepseek.com 或 https://api.openai.com/v1，不要填写末尾的 /chat/completions。</small>
+  <label for="model">模型名称</label>
+  <input id="model" name="model" value="{{model}}" maxlength="256" required spellcheck="false" autocapitalize="none">
+  <label for="api_key">API 密钥</label>
+  <input id="api_key" name="api_key" type="password" maxlength="4096" placeholder="{{key_hint}}" autocomplete="new-password" autocapitalize="none" spellcheck="false">
+  <small>已有密钥不会显示在网页中。更换服务地址时必须重新填写密钥。</small>
+  <details>
+    <summary>联网搜索 · DeepSeek（可选）</summary>
+    <label for="search_api_key">DeepSeek 搜索 API 密钥</label>
+    <input id="search_api_key" name="search_api_key" type="password" maxlength="4096" placeholder="{{search_key_hint}}" autocomplete="new-password" autocapitalize="none" spellcheck="false">
+    <small>搜索固定使用 DeepSeek 官方接口。主接口为官方 DeepSeek 时可留空复用主密钥；使用其他服务商时需单独填写 DeepSeek 密钥。留空保留已单独配置的搜索密钥，搜索按官方规则计费。</small>
+  </details>
+  <button type="submit">保存到阅读器</button>
+</form>
+<p><small>书籍内容会发送到你配置的模型服务；服务商可能收取费用。接口支持 HTTPS 时请优先使用 HTTPS。</small></p>
+</html>

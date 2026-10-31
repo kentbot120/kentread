@@ -1,1 +1,3 @@
 config.lua
+.DS_Store
+__pycache__/
