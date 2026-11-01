@@ -554,6 +554,12 @@ instance:onKentReadRewrite()
 local choices = UI.shown[#UI.shown]
 contains(choices.title, "第一节")
 equal(choices.buttons[1][1].text, "更好懂 · 费曼")
+instance:chooseChapter()
+do
+    local chapter_menu = UI.shown[#UI.shown]
+    equal(chapter_menu.item_table[1].mandatory, nil)
+    equal(chapter_menu.item_table[2].mandatory, "当前")
+end
 choices.buttons[1][1].callback()
 local confirm = UI.shown[#UI.shown]
 contains(confirm.text, "本章正文"); confirm.ok_callback()
@@ -566,6 +572,15 @@ local other_chapter = instance:rewriteResult(3, Prompts.STYLES[1])
 check(instance:htmlPath(clear) ~= instance:htmlPath(humor))
 check(instance:htmlPath(clear) ~= instance:htmlPath(other_chapter))
 instance:generate(humor); equal(started, 1, "one job at a time")
+instance:chooseStyle(2)
+equal(UI.shown[#UI.shown].buttons[1][1].text, "更好懂 · 费曼（生成中）")
+equal(UI.shown[#UI.shown].buttons[1][2].text, "更诙谐 · 老舍")
+instance:chooseChapter()
+do
+    local chapter_menu = UI.shown[#UI.shown]
+    equal(chapter_menu.item_table[2].mandatory, "当前 · 生成中", "running task is not counted as saved")
+    equal(chapter_menu.item_table[3].mandatory, nil, "status stays within its chapter")
+end
 instance.job.content = { "<h1>改写</h1><p>正文</p>" }
 instance.job.thinking = { "想法" }; instance.job.finish = "stop"; instance.job.done = true
 instance:poll(); equal(instance.job, nil)
@@ -583,6 +598,18 @@ contains(instance.viewer.text, "改写"); check(not instance.viewer.text:find("�
 instance:finish()
 equal(instance.result.id, clear.id, "background finish keeps selected result")
 contains(read(instance:htmlPath(humor)), "另一种改写")
+instance:chooseChapter()
+do
+    local chapter_menu = UI.shown[#UI.shown]
+    equal(chapter_menu.item_table[2].mandatory, "当前 · 已改写 2 种")
+    equal(chapter_menu.item_table[1].mandatory, nil, "child results do not mark parent chapters")
+    local old_position = doc.position
+    doc.position = "30"
+    instance:chooseChapter()
+    equal(UI.shown[#UI.shown].item_table[2].mandatory, "已改写 2 种")
+    equal(UI.shown[#UI.shown].item_table[4].mandatory, "当前")
+    doc.position = old_position
+end
 check(instance.regenerate_button.enabled)
 local old = read(instance:htmlPath(clear))
 instance:generate(clear); instance.job.error = "test failure"; instance:finish()
@@ -591,6 +618,10 @@ contains(instance.viewer.text, "改写")
 instance:generate(clear); instance.job.content = { "<p>新版本</p>" }; instance.job.finish = "stop"; instance:finish()
 equal(read(instance:thinkingPath(clear)), "", "old thinking does not leak into a new generation")
 instance:generate(clear)
+instance:chooseStyle(2)
+equal(UI.shown[#UI.shown].buttons[1][1].text, "更好懂 · 费曼（生成中）", "running status takes priority over saved result")
+instance:chooseChapter()
+equal(UI.shown[#UI.shown].item_table[2].mandatory, "当前 · 已改写 2 种 · 生成中")
 local stopped = instance.job; instance:stop(); check(stopped.stopped); equal(instance.job, nil)
 contains(instance.viewer.text, "新版本")
 local intro = instance:introResult()
@@ -613,6 +644,9 @@ count_before = started
 switch.callback()
 local style_dialog = UI.shown[#UI.shown]
 contains(style_dialog.title, "第一节 · 章节改写")
+equal(style_dialog.buttons[1][1].text, "更好懂 · 费曼（已生成）")
+equal(style_dialog.buttons[1][2].text, "更诙谐 · 老舍（已生成）")
+equal(style_dialog.buttons[2][1].text, "更简练 · 海明威")
 check(not first_viewer.closed, "viewer stays while the style dialog is open")
 style_dialog.buttons[#style_dialog.buttons][1].callback()
 check(style_dialog.closed); check(not first_viewer.closed); equal(instance.viewer, first_viewer)

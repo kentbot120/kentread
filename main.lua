@@ -271,6 +271,10 @@ function KentRead:htmlPath(task)
     return task.dir .. "/content.html"
 end
 
+function KentRead:hasResult(task)
+    return lfs.attributes(self:htmlPath(task), "mode") == "file"
+end
+
 function KentRead:thinkingPath(task)
     return (task or self.result).dir .. "/thinking.txt"
 end
@@ -312,8 +316,18 @@ function KentRead:chooseChapter()
     local items = {}
     for n, chapter in ipairs(self:chapters()) do
         local index = n
+        local labels = {}
+        if n == current then labels[#labels + 1] = "当前" end
+        local saved = 0
+        for _, style in ipairs(Prompts.STYLES) do
+            if self:hasResult(self:rewriteResult(n, style)) then saved = saved + 1 end
+        end
+        if saved > 0 then labels[#labels + 1] = "已改写 " .. saved .. " 种" end
+        if self.job and self.job.task.kind == "rewrite" and self.job.task.chapter == n then
+            labels[#labels + 1] = "生成中"
+        end
         items[#items + 1] = {
-            text = chapter.title, mandatory = n == current and "当前" or nil,
+            text = chapter.title, mandatory = #labels > 0 and table.concat(labels, " · ") or nil,
             callback = function() self:chooseStyle(index) end,
         }
     end
@@ -331,8 +345,12 @@ function KentRead:chooseStyle(n)
     local buttons = {}
     for i, style in ipairs(Prompts.STYLES) do
         local recipe = style
+        local task = self:rewriteResult(n, style)
+        local status
+        if self.job and self.job.task.id == task.id then status = "生成中"
+        elseif self:hasResult(task) then status = "已生成" end
         local button = {
-            text = style.title .. " · " .. style.author,
+            text = style.title .. " · " .. style.author .. (status and ("（" .. status .. "）") or ""),
             callback = function()
                 UIManager:close(dialog)
                 self:openResult(self:rewriteResult(n, recipe))
@@ -351,7 +369,7 @@ function KentRead:chooseStyle(n)
 end
 
 function KentRead:openResult(task)
-    if (self.job and self.job.task.id == task.id) or lfs.attributes(self:htmlPath(task), "mode") == "file" then
+    if (self.job and self.job.task.id == task.id) or self:hasResult(task) then
         self:closeViewer()
         self.result = task
         return self:show()
