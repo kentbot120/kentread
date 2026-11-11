@@ -80,6 +80,27 @@ KentRead 是一个 KOReader 的 AI 辅助阅读插件。在墨水屏上读长书
 
 ### 1. 安装插件
 
+#### 让 AI 帮你装
+
+用数据线把 Kindle 连到电脑，在 WorkBuddy、Claude Code 等能操作本地文件的 AI 工具里发送：
+
+```text
+按 https://github.com/kentbot120/kentread 里的「AI 安装指引」，帮我把 KentRead 装到 Kindle 上。
+```
+
+越狱有一定风险，请留意 AI 的每一步操作。
+
+**AI 安装指引**（写给 AI）：用户发来这个页面，是想让你把 KentRead 装到 Kindle 上。请按顺序执行，需要在 Kindle 屏幕上操作时提示用户。
+
+1. 检测 Kindle 的准确型号和固件版本，先把 Kindle 里的资料备份到电脑。
+2. 若尚未越狱：到 [KindleModding](https://kindlemodding.org/) 选择当前支持的越狱方案（如 WinterBreak），完成越狱、Hotfix 和 OTA 更新屏蔽，再安装 MRPI 与 KUAL（Coplate 版）等启动器。具体步骤以官网当前说明为准。
+3. 按 [KOReader 官方说明](https://github.com/koreader/koreader/wiki/Installation-on-Kindle-devices)安装 KOReader，按固件版本选对安装包。
+4. 把本仓库的 `*.lua`、`setup.html`、`LICENSE` 和 `art/` 复制到 Kindle 的 `koreader/plugins/kentread.koplugin/`，不要多套一层目录。该目录已存在时保留其中的 `config.lua`。
+5. 下载 GitHub 等需要代理的地址时，优先用国内镜像源。
+6. 不要索要 API 密钥，不要改动与安装无关的文件。完成后提示用户按下文「2. 手机扫码配置」填写密钥。
+
+#### 手动安装
+
 将本项目目录复制到阅读器的插件路径：
 
 ```text
