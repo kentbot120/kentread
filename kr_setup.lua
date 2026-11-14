@@ -114,11 +114,20 @@ function Server:request(data)
         if headers[key] then return response(400, "请求头重复。") end
         headers[key] = value:match("^(.-)%s*$")
     end
-    -- Pin the Host header as well as the secret route to prevent DNS rebinding.
-    if route ~= self.route or headers.host ~= self.authority
-        or (headers.origin and headers.origin ~= self.origin)
-        or headers["sec-fetch-site"] == "cross-site" then
-        return response(403, "配网地址无效，请扫描阅读器上显示的二维码。")
+    -- Pin Host and the secret route to prevent DNS rebinding. QR scanners
+    -- may mark the initial navigation as cross-site; only writes need the
+    -- Fetch Metadata restriction. GET never returns existing API keys.
+    if route ~= self.route then
+        return response(403, "配网地址无效或已更换，请重新扫描阅读器当前显示的二维码，保留完整网址（含端口和末尾临时凭据）。")
+    end
+    if headers.host ~= self.authority then
+        return response(403, "配网地址的 IP 或端口不匹配，请使用阅读器当前显示的完整网址。")
+    end
+    if headers.origin and headers.origin ~= self.origin then
+        return response(403, "浏览器请求来源与配网地址不匹配，请在系统浏览器中重新打开当前二维码的完整网址。")
+    end
+    if method ~= "GET" and headers["sec-fetch-site"] == "cross-site" then
+        return response(403, "浏览器将提交标记为跨站请求，请在系统浏览器中打开当前二维码的完整网址后重新填写。")
     end
     if method == "GET" then return response(200, self.page, true) end
     if method ~= "POST" then return response(405, "请通过配网页面提交配置。") end
