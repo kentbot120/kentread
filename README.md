@@ -104,7 +104,7 @@ KentRead 是一个 KOReader 的 AI 辅助阅读插件。在墨水屏上读长书
 2. **安装 KOReader**：按 [KOReader 官方说明](https://github.com/koreader/koreader/wiki/Installation-on-Kindle-devices)安装，按固件版本选对安装包。
 3. **安装 KentRead**：把本仓库的 `*.lua`、`setup.html`、`LICENSE` 和 `art/` 复制到 Kindle 的 `koreader/plugins/kentread.koplugin/`，不要多套一层目录。该目录已存在时保留其中的 `config.lua`。
 
-完成后提示用户按下文「2. 手机扫码配置」填写密钥。
+完成后提示用户按下文「2. 手机扫码配置」填写密钥。若已安装 KentRead，按下文「更新已有版本」操作。
 
 #### 手动安装
 
@@ -115,6 +115,32 @@ koreader/plugins/kentread.koplugin/
 ```
 
 确保 `main.lua`、`_meta.lua`、`setup.html` 和 `art/` 等文件与目录完整位于上述路径下，随后重启 KOReader。
+
+#### 更新已有版本
+
+用数据线把 Kindle 连到电脑，在能操作本地文件的 AI 工具里发送：
+
+```text
+我的 Kindle 已安装 KOReader 和 KentRead。请按 https://github.com/kentbot120/kentread 的 README 中「AI 更新指引」，帮我更新 KentRead，保留现有配置和生成内容。
+```
+
+**AI 更新指引**（写给 AI）：
+
+1. 检测已挂载的 Kindle，定位实际的 `koreader/plugins/kentread.koplugin/`。若未找到，提示用户连接设备；有多个候选设备时先确认目标。提示用户停止生成任务并退出 KOReader，再更新文件。
+2. 从本仓库默认分支获取最新代码，记录下载版本的提交号。下载 GitHub 等需要代理的地址时，优先用可信的国内镜像源，并确认镜像包含需要的更新；不能确认时明确说明。不要把本地旧副本当作最新版。
+3. 在电脑上备份设备中的插件目录，记录备份位置。备份可能含密钥，不要上传或输出其内容。
+4. 将下载代码中的根目录 `*.lua`（排除 `config.lua`）、`setup.html`、`LICENSE` 和 `art/` 覆盖到现有插件目录，不要删除整个旧目录，也不要多套一层目录。保留设备上的 `config.lua`、KOReader 设置目录中的 `kentread.json`，以及书籍 `.sdr/kentread/` 内的生成内容。不要用 `config.sample.lua` 覆盖 `config.lua`，不要索要或显示 API 密钥。
+5. 校验复制后的程序文件与下载版本一致，确认目录结构完整，报告提交号和备份位置。完成文件操作后，提示用户安全弹出 Kindle、拔线并重新启动 KOReader；屏幕操作由用户完成，未经确认不要报告真机验证成功。更新插件无需重新越狱或重装 KOReader。
+
+手动更新时也按上述文件范围覆盖，保留配置和生成内容，随后重启 KOReader。
+
+如果这次更新是为了重试「配网地址无效」，可直接发送：
+
+```text
+我的 Kindle 已安装 KOReader 和 KentRead，但手机扫码提示「配网地址无效」。请按 https://github.com/kentbot120/kentread 的 README 中「AI 更新指引」更新插件，保留配置和生成内容。请确认下载版本包含允许跨站 GET 打开配网页面、并区分各项校验失败提示的修复，报告安装的提交号。更新后，引导我重启 KOReader，重新打开「菜单 → 工具 → KentRead → 扫码配置接口 / 密钥」，扫描新生成的二维码重试，不再使用旧链接。若仍失败，请根据新的完整错误提示继续排查，不要直接认定是微信或网络问题，也不要让我提供 API 密钥或带临时凭据的完整网址。
+```
+
+重试时手机与阅读器须连接同一 Wi-Fi，并保持阅读器的配网弹窗开启。若已有密钥且接口地址未变，可留空保留；若从未保存成功，仍需由用户在配网页面自行填写密钥。页面打开并保存成功后才算本次配网验证通过。
 
 ### 2. 手机扫码配置
 
